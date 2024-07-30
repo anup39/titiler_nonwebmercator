@@ -63,7 +63,8 @@ class MosaicTilerFactory(BaseTilerFactory):
 
     backend_dependency: Type[DefaultDependency] = DefaultDependency
 
-    pixel_selection_dependency: Callable[..., MosaicMethodBase] = PixelSelectionParams
+    pixel_selection_dependency: Callable[...,
+                                         MosaicMethodBase] = PixelSelectionParams
 
     # Tile/Tilejson/WMTS Dependencies
     tile_dependency: Type[DefaultDependency] = TileParams
@@ -135,7 +136,8 @@ class MosaicTilerFactory(BaseTilerFactory):
         @self.router.get(
             "/bounds",
             response_model=Bounds,
-            responses={200: {"description": "Return the bounds of the MosaicJSON"}},
+            responses={
+                200: {"description": "Return the bounds of the MosaicJSON"}},
         )
         def bounds(
             src_path=Depends(self.path_dependency),
@@ -162,7 +164,8 @@ class MosaicTilerFactory(BaseTilerFactory):
         @self.router.get(
             "/info",
             response_model=mosaicInfo,
-            responses={200: {"description": "Return info about the MosaicJSON"}},
+            responses={
+                200: {"description": "Return info about the MosaicJSON"}},
         )
         def info(
             src_path=Depends(self.path_dependency),
@@ -702,7 +705,8 @@ class MosaicTilerFactory(BaseTilerFactory):
 
         @self.router.get(
             "/{minx},{miny},{maxx},{maxy}/assets",
-            responses={200: {"description": "Return list of COGs in bounding box"}},
+            responses={
+                200: {"description": "Return list of COGs in bounding box"}},
         )
         def assets_for_bbox(
             minx: Annotated[float, Path(description="Bounding box min X")],

@@ -87,7 +87,8 @@ from titiler.core.routing import EndpointScope
 from titiler.core.utils import render_image
 
 jinja2_env = jinja2.Environment(
-    loader=jinja2.ChoiceLoader([jinja2.PackageLoader(__package__, "templates")])
+    loader=jinja2.ChoiceLoader(
+        [jinja2.PackageLoader(__package__, "templates")])
 )
 DEFAULT_TEMPLATES = Jinja2Templates(env=jinja2_env)
 
@@ -216,7 +217,8 @@ class BaseTilerFactory(metaclass=abc.ABCMeta):
 
         # Update endpoints dependencies
         for scopes, dependencies in self.route_dependencies:
-            self.add_route_dependencies(scopes=scopes, dependencies=dependencies)
+            self.add_route_dependencies(
+                scopes=scopes, dependencies=dependencies)
 
     @abc.abstractmethod
     def register_routes(self):
@@ -405,7 +407,8 @@ class TilerFactory(BaseTilerFactory):
                 with self.reader(src_path, **reader_params.as_dict()) as src_dst:
                     return Feature(
                         type="Feature",
-                        geometry=Polygon.from_bounds(*src_dst.geographic_bounds),
+                        geometry=Polygon.from_bounds(
+                            *src_dst.geographic_bounds),
                         properties=src_dst.info(),
                     )
 
@@ -488,7 +491,8 @@ class TilerFactory(BaseTilerFactory):
             """Get Statistics from a geojson feature or featureCollection."""
             fc = geojson
             if isinstance(fc, Feature):
-                fc = FeatureCollection(type="FeatureCollection", features=[geojson])
+                fc = FeatureCollection(
+                    type="FeatureCollection", features=[geojson])
 
             with rasterio.Env(**env):
                 with self.reader(src_path, **reader_params.as_dict()) as src_dst:
@@ -1211,7 +1215,8 @@ class MultiBaseTilerFactory(TilerFactory):
                 with self.reader(src_path, **reader_params.as_dict()) as src_dst:
                     return Feature(
                         type="Feature",
-                        geometry=Polygon.from_bounds(*src_dst.geographic_bounds),
+                        geometry=Polygon.from_bounds(
+                            *src_dst.geographic_bounds),
                         properties={
                             asset: asset_info
                             for asset, asset_info in src_dst.info(
@@ -1223,7 +1228,8 @@ class MultiBaseTilerFactory(TilerFactory):
         @self.router.get(
             "/assets",
             response_model=List[str],
-            responses={200: {"description": "Return a list of supported assets."}},
+            responses={
+                200: {"description": "Return a list of supported assets."}},
         )
         def available_assets(
             src_path=Depends(self.path_dependency),
@@ -1352,7 +1358,8 @@ class MultiBaseTilerFactory(TilerFactory):
             """Get Statistics from a geojson feature or featureCollection."""
             fc = geojson
             if isinstance(fc, Feature):
-                fc = FeatureCollection(type="FeatureCollection", features=[geojson])
+                fc = FeatureCollection(
+                    type="FeatureCollection", features=[geojson])
 
             with rasterio.Env(**env):
                 with self.reader(src_path, **reader_params.as_dict()) as src_dst:
@@ -1456,14 +1463,16 @@ class MultiBandTilerFactory(TilerFactory):
                 with self.reader(src_path, **reader_params.as_dict()) as src_dst:
                     return Feature(
                         type="Feature",
-                        geometry=Polygon.from_bounds(*src_dst.geographic_bounds),
+                        geometry=Polygon.from_bounds(
+                            *src_dst.geographic_bounds),
                         properties=src_dst.info(**bands_params.as_dict()),
                     )
 
         @self.router.get(
             "/bands",
             response_model=List[str],
-            responses={200: {"description": "Return a list of supported bands."}},
+            responses={
+                200: {"description": "Return a list of supported bands."}},
         )
         def available_bands(
             src_path=Depends(self.path_dependency),
@@ -1556,7 +1565,8 @@ class MultiBandTilerFactory(TilerFactory):
             """Get Statistics from a geojson feature or featureCollection."""
             fc = geojson
             if isinstance(fc, Feature):
-                fc = FeatureCollection(type="FeatureCollection", features=[geojson])
+                fc = FeatureCollection(
+                    type="FeatureCollection", features=[geojson])
 
             with rasterio.Env(**env):
                 with self.reader(src_path, **reader_params.as_dict()) as src_dst:
@@ -1902,9 +1912,11 @@ class ColorMapFactory:
                     arr = numpy.array([values] * 20)
 
                     if orientation == "vertical":
-                        height = height or 256 if len(values) < 256 else len(values)
+                        height = height or 256 if len(
+                            values) < 256 else len(values)
                     else:
-                        width = width or 256 if len(values) < 256 else len(values)
+                        width = width or 256 if len(
+                            values) < 256 else len(values)
 
                 ###############################################################
                 # DISCRETE CMAP
@@ -1913,9 +1925,11 @@ class ColorMapFactory:
                     arr = numpy.array([values] * 20)
 
                     if orientation == "vertical":
-                        height = height or 256 if len(values) < 256 else len(values)
+                        height = height or 256 if len(
+                            values) < 256 else len(values)
                     else:
-                        width = width or 256 if len(values) < 256 else len(values)
+                        width = width or 256 if len(
+                            values) < 256 else len(values)
 
                 ###############################################################
                 # LINEAR CMAP
