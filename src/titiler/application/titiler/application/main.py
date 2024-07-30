@@ -22,6 +22,7 @@ from titiler.core.factory import (
     MultiBaseTilerFactory,
     TilerFactory,
     TMSFactory,
+
 )
 from titiler.core.middleware import (
     CacheControlMiddleware,
@@ -34,6 +35,7 @@ from titiler.extensions import (
     cogViewerExtension,
     stacExtension,
     stacViewerExtension,
+    wmsExtension,
 )
 from titiler.mosaic.errors import MOSAIC_STATUS_CODES
 from titiler.mosaic.factory import MosaicTilerFactory
@@ -43,7 +45,8 @@ logging.getLogger("botocore.utils").disabled = True
 logging.getLogger("rio-tiler").setLevel(logging.ERROR)
 
 jinja2_env = jinja2.Environment(
-    loader=jinja2.ChoiceLoader([jinja2.PackageLoader(__package__, "templates")])
+    loader=jinja2.ChoiceLoader(
+        [jinja2.PackageLoader(__package__, "templates")])
 )
 templates = Jinja2Templates(env=jinja2_env)
 
@@ -103,6 +106,7 @@ if not api_settings.disable_cog:
             cogValidateExtension(),
             cogViewerExtension(),
             stacExtension(),
+            wmsExtension(),
         ],
     )
 
@@ -268,7 +272,8 @@ def landing(request: Request):
         if part is None or part == "":
             part = "Home"
         crumbpath += f"/{crumb}"
-        crumbs.append({"url": crumbpath.rstrip("/"), "part": part.capitalize()})
+        crumbs.append({"url": crumbpath.rstrip(
+            "/"), "part": part.capitalize()})
 
     return templates.TemplateResponse(
         "index.html",

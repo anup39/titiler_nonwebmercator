@@ -23,7 +23,8 @@ from titiler.core.resources.enums import ImageType, MediaType
 from titiler.core.utils import render_image
 
 jinja2_env = jinja2.Environment(
-    loader=jinja2.ChoiceLoader([jinja2.PackageLoader(__package__, "templates")])
+    loader=jinja2.ChoiceLoader(
+        [jinja2.PackageLoader(__package__, "templates")])
 )
 DEFAULT_TEMPLATES = Jinja2Templates(env=jinja2_env)
 
@@ -60,7 +61,7 @@ class OverlayMethod(MosaicMethodBase):
 class wmsExtension(FactoryExtension):
     """Add /wms endpoint to a TilerFactory."""
 
-    supported_crs: List[str] = field(default_factory=lambda: ["EPSG:4326"])
+    supported_crs: List[str] = field(default_factory=lambda: ["EPSG:25832"])
     supported_format: List[str] = field(
         default_factory=lambda: [
             "image/png",
@@ -538,7 +539,8 @@ class wmsExtension(FactoryExtension):
                     "format",
                 }
 
-                image, format, transparent = get_map_data(req, req_keys, request_type)
+                image, format, transparent = get_map_data(
+                    req, req_keys, request_type)
 
                 if post_process:
                     image = post_process(image)
@@ -593,7 +595,8 @@ class wmsExtension(FactoryExtension):
                     pixel_value = image.data[band, j, i]
                     bands_info.append(pixel_value)
 
-                html_content = ",".join([str(band_info) for band_info in bands_info])
+                html_content = ",".join([str(band_info)
+                                        for band_info in bands_info])
                 return Response(html_content, 200)
 
             else:
