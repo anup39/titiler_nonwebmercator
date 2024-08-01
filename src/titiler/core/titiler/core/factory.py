@@ -578,7 +578,8 @@ class TilerFactory(BaseTilerFactory):
             ],
             tileMatrixSetId: Annotated[
                 Literal[tuple(self.supported_tms.list())],
-                f"Identifier selecting one of the TileMatrixSetId supported (default: '{self.default_tms}')",
+                f"Identifier selecting one of the TileMatrixSetId supported (default: '{
+                    self.default_tms}')",
             ] = self.default_tms,
             scale: Annotated[
                 conint(gt=0, le=4), "Tile size scale. 1=256x256, 2=512x512..."
@@ -601,6 +602,7 @@ class TilerFactory(BaseTilerFactory):
         ):
             """Create map tile from a dataset."""
             tms = self.supported_tms.get(tileMatrixSetId)
+            print("tms", tms)
             with rasterio.Env(**env):
                 with self.reader(
                     src_path, tms=tms, **reader_params.as_dict()
@@ -654,7 +656,8 @@ class TilerFactory(BaseTilerFactory):
             request: Request,
             tileMatrixSetId: Annotated[
                 Literal[tuple(self.supported_tms.list())],
-                f"Identifier selecting one of the TileMatrixSetId supported (default: '{self.default_tms}')",
+                f"Identifier selecting one of the TileMatrixSetId supported (default: '{
+                    self.default_tms}')",
             ] = self.default_tms,
             src_path=Depends(self.path_dependency),
             tile_format: Annotated[
@@ -737,7 +740,8 @@ class TilerFactory(BaseTilerFactory):
             src_path=Depends(self.path_dependency),
             tileMatrixSetId: Annotated[
                 Literal[tuple(self.supported_tms.list())],
-                f"Identifier selecting one of the TileMatrixSetId supported (default: '{self.default_tms}')",
+                f"Identifier selecting one of the TileMatrixSetId supported (default: '{
+                    self.default_tms}')",
             ] = self.default_tms,
             tile_format: Annotated[
                 Optional[ImageType],
@@ -802,7 +806,8 @@ class TilerFactory(BaseTilerFactory):
             request: Request,
             tileMatrixSetId: Annotated[
                 Literal[tuple(self.supported_tms.list())],
-                f"Identifier selecting one of the TileMatrixSetId supported (default: '{self.default_tms}')",
+                f"Identifier selecting one of the TileMatrixSetId supported (default: '{
+                    self.default_tms}')",
             ] = self.default_tms,
             src_path=Depends(self.path_dependency),
             tile_format: Annotated[
@@ -882,15 +887,15 @@ class TilerFactory(BaseTilerFactory):
             for zoom in range(minzoom, maxzoom + 1):
                 matrix = tms.matrix(zoom)
                 tm = f"""
-                        <TileMatrix>
-                            <ows:Identifier>{matrix.id}</ows:Identifier>
-                            <ScaleDenominator>{matrix.scaleDenominator}</ScaleDenominator>
-                            <TopLeftCorner>{matrix.pointOfOrigin[0]} {matrix.pointOfOrigin[1]}</TopLeftCorner>
-                            <TileWidth>{matrix.tileWidth}</TileWidth>
-                            <TileHeight>{matrix.tileHeight}</TileHeight>
-                            <MatrixWidth>{matrix.matrixWidth}</MatrixWidth>
-                            <MatrixHeight>{matrix.matrixHeight}</MatrixHeight>
-                        </TileMatrix>"""
+                            <TileMatrix>
+                                <ows:Identifier>{matrix.id}</ows:Identifier>
+                                <ScaleDenominator>{matrix.scaleDenominator}</ScaleDenominator>
+                                <TopLeftCorner>{matrix.pointOfOrigin[0]} {matrix.pointOfOrigin[1]}</TopLeftCorner>
+                                <TileWidth>{matrix.tileWidth}</TileWidth>
+                                <TileHeight>{matrix.tileHeight}</TileHeight>
+                                <MatrixWidth>{matrix.matrixWidth}</MatrixWidth>
+                                <MatrixHeight>{matrix.matrixHeight}</MatrixHeight>
+                            </TileMatrix>"""
                 tileMatrix.append(tm)
 
             if use_epsg:
@@ -898,21 +903,21 @@ class TilerFactory(BaseTilerFactory):
             else:
                 supported_crs = tms.crs.srs
 
-            return self.templates.TemplateResponse(
-                request,
-                name="wmts.xml",
-                context={
-                    "tiles_endpoint": tiles_url,
-                    "bounds": bounds,
-                    "tileMatrix": tileMatrix,
-                    "tms": tms,
-                    "supported_crs": supported_crs,
-                    "title": src_path if isinstance(src_path, str) else "TiTiler",
-                    "layer_name": "Dataset",
-                    "media_type": tile_format.mediatype,
-                },
-                media_type=MediaType.xml.value,
-            )
+                return self.templates.TemplateResponse(
+                    request,
+                    name="wmts.xml",
+                    context={
+                        "tiles_endpoint": tiles_url,
+                        "bounds": bounds,
+                        "tileMatrix": tileMatrix,
+                        "tms": tms,
+                        "supported_crs": supported_crs,
+                        "title": src_path if isinstance(src_path, str) else "TiTiler",
+                        "layer_name": "Dataset",
+                        "media_type": tile_format.mediatype,
+                    },
+                    media_type=MediaType.xml.value,
+                )
 
     ############################################################################
     # /point
