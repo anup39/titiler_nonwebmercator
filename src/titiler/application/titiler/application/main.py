@@ -79,19 +79,10 @@ def validate_access_token(access_token: str = Security(api_key_query)):
 ###############################################################################
 
 app = FastAPI(
-    title=api_settings.name,
-    openapi_url="/api",
-    docs_url="/api.html",
-    description="""A modern dynamic tile server built on top of FastAPI and Rasterio/GDAL.
-
----
-
-**Documentation**: <a href="https://developmentseed.org/titiler/" target="_blank">https://developmentseed.org/titiler/</a>
-
-**Source Code**: <a href="https://github.com/developmentseed/titiler" target="_blank">https://github.com/developmentseed/titiler</a>
-
----
-    """,
+    title="B3D Tile server",
+    # openapi_url="/api",
+    # docs_url="/api.html",
+    description="""A modern dynamic tile server built on top of FastAPI and Rasterio/GDAL""",
     version=titiler_version,
     root_path=api_settings.root_path,
     dependencies=[Depends(validate_access_token)],
@@ -220,7 +211,7 @@ def ping():
     return {"ping": "pong!"}
 
 
-@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+# @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 def landing(request: Request):
     """TiTiler landing page."""
     data = {
