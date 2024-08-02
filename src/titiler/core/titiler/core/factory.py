@@ -601,7 +601,6 @@ class TilerFactory(BaseTilerFactory):
         ):
             """Create map tile from a dataset."""
             tms = self.supported_tms.get(tileMatrixSetId)
-            print("tms", tms)
             with rasterio.Env(**env):
                 with self.reader(
                     src_path, tms=tms, **reader_params.as_dict()
