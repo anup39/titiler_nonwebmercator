@@ -9,7 +9,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class ApiSettings(BaseSettings):
     """FASTAPI application settings."""
 
-    name: str = "TiTiler"
+    name: str = "B3D Tile server"
     cors_origins: str = "*"
     cors_allow_methods: str = "GET"
     cachecontrol: str = "public, max-age=3600"
