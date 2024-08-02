@@ -163,13 +163,15 @@ app.include_router(
 add_exception_handlers(app, DEFAULT_STATUS_CODES)
 add_exception_handlers(app, MOSAIC_STATUS_CODES)
 
+origins = ["*"]
+
 # Set all CORS enabled origins
 if api_settings.cors_origins:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=api_settings.cors_origins,
+        allow_origins=origins,
         allow_credentials=True,
-        allow_methods=api_settings.cors_allow_methods,
+        allow_methods=["*"],
         allow_headers=["*"],
     )
 
