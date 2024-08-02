@@ -80,8 +80,8 @@ def validate_access_token(access_token: str = Security(api_key_query)):
 
 app = FastAPI(
     title="B3D Tile server",
-    openapi_url="/api",
-    docs_url="/api.html",
+    # openapi_url="/api",
+    # docs_url="/api.html",
     description="""A modern dynamic tile server built on top of FastAPI and Rasterio/GDAL""",
     version=titiler_version,
     root_path=api_settings.root_path,
