@@ -534,30 +534,34 @@ class TilerFactory(BaseTilerFactory):
     def tile(self):  # noqa: C901
         """Register /tiles endpoint."""
 
-        @self.router.get(r"/tiles/{z}/{x}/{y}", **img_endpoint_params, deprecated=True)
+        @self.router.get(r"/{id}/tiles/{z}/{x}/{y}", **img_endpoint_params, deprecated=True)
         @self.router.get(
-            r"/tiles/{z}/{x}/{y}.{format}", **img_endpoint_params, deprecated=True
+            r"/{id}/tiles/{z}/{x}/{y}.{format}", **img_endpoint_params, deprecated=True
         )
         @self.router.get(
-            r"/tiles/{z}/{x}/{y}@{scale}x", **img_endpoint_params, deprecated=True
+            r"/{id}/tiles/{z}/{x}/{y}@{scale}x", **img_endpoint_params, deprecated=True
         )
         @self.router.get(
-            r"/tiles/{z}/{x}/{y}@{scale}x.{format}",
+            r"/{id}/tiles/{z}/{x}/{y}@{scale}x.{format}",
             **img_endpoint_params,
             deprecated=True,
         )
-        @self.router.get(r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}", **img_endpoint_params)
+        @self.router.get(r"/{id}/tiles/{tileMatrixSetId}/{z}/{x}/{y}", **img_endpoint_params)
         @self.router.get(
-            r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}.{format}", **img_endpoint_params
+            r"/{id}/tiles/{tileMatrixSetId}/{z}/{x}/{y}.{format}", **img_endpoint_params
         )
         @self.router.get(
-            r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x", **img_endpoint_params
+            r"/{id}/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x", **img_endpoint_params
         )
         @self.router.get(
-            r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x.{format}",
+            r"/{id}/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x.{format}",
             **img_endpoint_params,
         )
         def tile(
+            id: Annotated[
+                str,
+                Path(description="Asset ID to read from (e.g S2, L8)."),
+            ],
             z: Annotated[
                 int,
                 Path(
@@ -587,7 +591,7 @@ class TilerFactory(BaseTilerFactory):
                 ImageType,
                 "Default will be automatically defined if the output image needs a mask (png) or not (jpeg).",
             ] = None,
-            src_path=Depends(self.path_dependency),
+            # src_path=Depends(self.path_dependency),
             layer_params=Depends(self.layer_dependency),
             dataset_params=Depends(self.dataset_dependency),
             tile_params=Depends(self.tile_dependency),
@@ -600,7 +604,11 @@ class TilerFactory(BaseTilerFactory):
             env=Depends(self.environment_dependency),
         ):
             """Create map tile from a dataset."""
+            print('tile function')
+            print(id, 'id')
             tms = self.supported_tms.get(tileMatrixSetId)
+            # src_path = "optimized/test.tif"
+            # print(src_path, 'path of tif file')
             with rasterio.Env(**env):
                 with self.reader(
                     src_path, tms=tms, **reader_params.as_dict()
