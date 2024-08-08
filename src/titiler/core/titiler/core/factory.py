@@ -89,7 +89,7 @@ from dotenv import load_dotenv
 import os
 ENV = load_dotenv()
 folder_path = os.getenv("OPTIMIZED_PATH")
-# print(folder_path, "folder_path")
+print(folder_path, "folder_path")
 
 
 jinja2_env = jinja2.Environment(
@@ -861,7 +861,7 @@ class TilerFactory(BaseTilerFactory):
         ):
             """OGC WMTS endpoint."""
             route_params = {
-                "id": "{id}",
+                "id": id,
                 "z": "{TileMatrix}",
                 "x": "{TileCol}",
                 "y": "{TileRow}",
@@ -869,7 +869,10 @@ class TilerFactory(BaseTilerFactory):
                 "format": tile_format.value,
                 "tileMatrixSetId": tileMatrixSetId,
             }
+            print(route_params, "route_params")
             tiles_url = self.url_for(request, "tile", **route_params)
+
+            print(tiles_url, "tiles_url")
 
             qs_key_to_remove = [
                 "tilematrixsetid",
