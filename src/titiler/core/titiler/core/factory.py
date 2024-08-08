@@ -869,10 +869,10 @@ class TilerFactory(BaseTilerFactory):
                 "format": tile_format.value,
                 "tileMatrixSetId": tileMatrixSetId,
             }
-            print(route_params, "route_params")
+            # print(route_params, "route_params")
             tiles_url = self.url_for(request, "tile", **route_params)
 
-            print(tiles_url, "tiles_url")
+            # print(tiles_url, "tiles_url")
 
             qs_key_to_remove = [
                 "tilematrixsetid",
