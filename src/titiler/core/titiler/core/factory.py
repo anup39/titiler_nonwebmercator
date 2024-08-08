@@ -607,7 +607,7 @@ class TilerFactory(BaseTilerFactory):
             print('tile function')
             print(id, 'id')
             tms = self.supported_tms.get(tileMatrixSetId)
-            # src_path = "optimized/test.tif"
+            src_path = "optimized/test.tif"
             # print(src_path, 'path of tif file')
             with rasterio.Env(**env):
                 with self.reader(
