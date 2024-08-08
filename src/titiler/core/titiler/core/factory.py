@@ -348,16 +348,19 @@ class TilerFactory(BaseTilerFactory):
         """Register /bounds endpoint."""
 
         @self.router.get(
-            "/bounds",
+            "/{id}/bounds",
             response_model=Bounds,
             responses={200: {"description": "Return dataset's bounds."}},
         )
         def bounds(
-            src_path=Depends(self.path_dependency),
+            # src_path=Depends(self.path_dependency),
             reader_params=Depends(self.reader_dependency),
             env=Depends(self.environment_dependency),
+            id: str = Path(...,
+                           description="Asset ID to read from (e.g S2, L8)."),
         ):
             """Return the bounds of the COG."""
+            src_path = f"optimized/{id}.tif"
             with rasterio.Env(**env):
                 with self.reader(src_path, **reader_params.as_dict()) as src_dst:
                     return {"bounds": src_dst.geographic_bounds}
@@ -534,30 +537,34 @@ class TilerFactory(BaseTilerFactory):
     def tile(self):  # noqa: C901
         """Register /tiles endpoint."""
 
-        @self.router.get(r"/tiles/{z}/{x}/{y}", **img_endpoint_params, deprecated=True)
+        @self.router.get(r"/{id}/tiles/{z}/{x}/{y}", **img_endpoint_params, deprecated=True)
         @self.router.get(
-            r"/tiles/{z}/{x}/{y}.{format}", **img_endpoint_params, deprecated=True
+            r"/{id}/tiles/{z}/{x}/{y}.{format}", **img_endpoint_params, deprecated=True
         )
         @self.router.get(
-            r"/tiles/{z}/{x}/{y}@{scale}x", **img_endpoint_params, deprecated=True
+            r"/{id}/tiles/{z}/{x}/{y}@{scale}x", **img_endpoint_params, deprecated=True
         )
         @self.router.get(
-            r"/tiles/{z}/{x}/{y}@{scale}x.{format}",
+            r"/{id}/tiles/{z}/{x}/{y}@{scale}x.{format}",
             **img_endpoint_params,
             deprecated=True,
         )
-        @self.router.get(r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}", **img_endpoint_params)
+        @self.router.get(r"/{id}/tiles/{tileMatrixSetId}/{z}/{x}/{y}", **img_endpoint_params)
         @self.router.get(
-            r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}.{format}", **img_endpoint_params
+            r"/{id}/tiles/{tileMatrixSetId}/{z}/{x}/{y}.{format}", **img_endpoint_params
         )
         @self.router.get(
-            r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x", **img_endpoint_params
+            r"/{id}/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x", **img_endpoint_params
         )
         @self.router.get(
-            r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x.{format}",
+            r"/{id}/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x.{format}",
             **img_endpoint_params,
         )
         def tile(
+            id: Annotated[
+                str,
+                Path(description="Asset ID to read from (e.g S2, L8)."),
+            ],
             z: Annotated[
                 int,
                 Path(
@@ -587,7 +594,7 @@ class TilerFactory(BaseTilerFactory):
                 ImageType,
                 "Default will be automatically defined if the output image needs a mask (png) or not (jpeg).",
             ] = None,
-            src_path=Depends(self.path_dependency),
+            # src_path=Depends(self.path_dependency),
             layer_params=Depends(self.layer_dependency),
             dataset_params=Depends(self.dataset_dependency),
             tile_params=Depends(self.tile_dependency),
@@ -600,7 +607,9 @@ class TilerFactory(BaseTilerFactory):
             env=Depends(self.environment_dependency),
         ):
             """Create map tile from a dataset."""
+
             tms = self.supported_tms.get(tileMatrixSetId)
+            src_path = f"optimized/{id}.tif"
             with rasterio.Env(**env):
                 with self.reader(
                     src_path, tms=tms, **reader_params.as_dict()
@@ -793,18 +802,22 @@ class TilerFactory(BaseTilerFactory):
         """Register /wmts endpoint."""
 
         @self.router.get(
-            "/WMTSCapabilities.xml", response_class=XMLResponse, deprecated=True
+            "/{id}/wmts", response_class=XMLResponse, deprecated=True
         )
         @self.router.get(
-            "/{tileMatrixSetId}/WMTSCapabilities.xml", response_class=XMLResponse
+            "/{id}/{tileMatrixSetId}/wmts", response_class=XMLResponse
         )
         def wmts(
             request: Request,
+            id: Annotated[
+                str,
+                Path(description="Asset ID to read from (e.g S2, L8)."),
+            ],
             tileMatrixSetId: Annotated[
                 Literal[tuple(self.supported_tms.list(
                 ))], f"Identifier selecting one of the TileMatrixSetId supported(default: '{self.default_tms}')",
             ] = self.default_tms,
-            src_path=Depends(self.path_dependency),
+            # src_path=Depends(self.path_dependency),
             tile_format: Annotated[
                 ImageType,
                 Query(description="Output image type. Default is png."),
@@ -842,6 +855,7 @@ class TilerFactory(BaseTilerFactory):
         ):
             """OGC WMTS endpoint."""
             route_params = {
+                "id": "{id}",
                 "z": "{TileMatrix}",
                 "x": "{TileCol}",
                 "y": "{TileRow}",
@@ -870,6 +884,7 @@ class TilerFactory(BaseTilerFactory):
                 tiles_url += f"?{urlencode(qs)}"
 
             tms = self.supported_tms.get(tileMatrixSetId)
+            src_path = f"optimized/{id}.tif"
             with rasterio.Env(**env):
                 with self.reader(
                     src_path, tms=tms, **reader_params.as_dict()
@@ -908,7 +923,7 @@ class TilerFactory(BaseTilerFactory):
                         "tms": tms,
                         "supported_crs": supported_crs,
                         "title": src_path if isinstance(src_path, str) else "TiTiler",
-                        "layer_name": "Dataset",
+                        "layer_name": id,
                         "media_type": tile_format.mediatype,
                     },
                     media_type=MediaType.xml.value,

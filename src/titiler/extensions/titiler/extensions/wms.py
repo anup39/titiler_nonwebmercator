@@ -377,7 +377,7 @@ class wmsExtension(FactoryExtension):
                     layers_dict[layer] = {}
                     with rasterio.Env(**env):
                         with factory.reader(
-                            layer, **reader_params.as_dict()
+                            f"optimized/{layer}.tif", **reader_params.as_dict()
                         ) as src_dst:
                             layers_dict[layer]["srs"] = f"EPSG:{src_dst.crs.to_epsg()}"
                             layers_dict[layer]["bounds"] = src_dst.bounds
@@ -506,6 +506,7 @@ class wmsExtension(FactoryExtension):
                 height, width = int(req["height"]), int(req["width"])
 
                 def _reader(src_path: str):
+                    src_path = f"optimized/{src_path}.tif"
                     with rasterio.Env(**env):
                         with factory.reader(
                             src_path, **reader_params.as_dict()
