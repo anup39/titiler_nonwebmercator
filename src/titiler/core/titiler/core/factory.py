@@ -348,16 +348,19 @@ class TilerFactory(BaseTilerFactory):
         """Register /bounds endpoint."""
 
         @self.router.get(
-            "/bounds",
+            "/{id}/bounds",
             response_model=Bounds,
             responses={200: {"description": "Return dataset's bounds."}},
         )
         def bounds(
-            src_path=Depends(self.path_dependency),
+            # src_path=Depends(self.path_dependency),
             reader_params=Depends(self.reader_dependency),
             env=Depends(self.environment_dependency),
+            id: str = Path(...,
+                           description="Asset ID to read from (e.g S2, L8)."),
         ):
             """Return the bounds of the COG."""
+            src_path = f"optimized/{id}.tif"
             with rasterio.Env(**env):
                 with self.reader(src_path, **reader_params.as_dict()) as src_dst:
                     return {"bounds": src_dst.geographic_bounds}
@@ -604,11 +607,9 @@ class TilerFactory(BaseTilerFactory):
             env=Depends(self.environment_dependency),
         ):
             """Create map tile from a dataset."""
-            print('tile function')
-            print(id, 'id')
+
             tms = self.supported_tms.get(tileMatrixSetId)
-            src_path = "optimized/test.tif"
-            # print(src_path, 'path of tif file')
+            src_path = f"optimized/{id}.tif"
             with rasterio.Env(**env):
                 with self.reader(
                     src_path, tms=tms, **reader_params.as_dict()
@@ -862,7 +863,6 @@ class TilerFactory(BaseTilerFactory):
                 "format": tile_format.value,
                 "tileMatrixSetId": tileMatrixSetId,
             }
-            print(self.url_for(request, "tile", **route_params))
             tiles_url = self.url_for(request, "tile", **route_params)
 
             qs_key_to_remove = [
@@ -884,7 +884,7 @@ class TilerFactory(BaseTilerFactory):
                 tiles_url += f"?{urlencode(qs)}"
 
             tms = self.supported_tms.get(tileMatrixSetId)
-            src_path = "optimized/test.tif"
+            src_path = f"optimized/{id}.tif"
             with rasterio.Env(**env):
                 with self.reader(
                     src_path, tms=tms, **reader_params.as_dict()
