@@ -1,5 +1,7 @@
 """wms Extension."""
 
+import os
+from dotenv import load_dotenv
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -27,6 +29,9 @@ jinja2_env = jinja2.Environment(
         [jinja2.PackageLoader(__package__, "templates")])
 )
 DEFAULT_TEMPLATES = Jinja2Templates(env=jinja2_env)
+ENV = load_dotenv()
+folder_path = os.getenv("OPTIMIZED_PATH")
+# print(folder_path, "folder_path")
 
 
 class WMSMediaType(str, Enum):
@@ -506,7 +511,7 @@ class wmsExtension(FactoryExtension):
                 height, width = int(req["height"]), int(req["width"])
 
                 def _reader(src_path: str):
-                    src_path = f"optimized/{src_path}.tif"
+                    src_path = f"{folder_path}/{src_path}.tif"
                     with rasterio.Env(**env):
                         with factory.reader(
                             src_path, **reader_params.as_dict()

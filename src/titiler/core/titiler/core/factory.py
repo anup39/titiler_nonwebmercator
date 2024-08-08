@@ -85,6 +85,12 @@ from titiler.core.resources.enums import ImageType, MediaType, OptionalHeader
 from titiler.core.resources.responses import GeoJSONResponse, JSONResponse, XMLResponse
 from titiler.core.routing import EndpointScope
 from titiler.core.utils import render_image
+from dotenv import load_dotenv
+import os
+ENV = load_dotenv()
+folder_path = os.getenv("OPTIMIZED_PATH")
+# print(folder_path, "folder_path")
+
 
 jinja2_env = jinja2.Environment(
     loader=jinja2.ChoiceLoader(
@@ -360,7 +366,7 @@ class TilerFactory(BaseTilerFactory):
                            description="Asset ID to read from (e.g S2, L8)."),
         ):
             """Return the bounds of the COG."""
-            src_path = f"optimized/{id}.tif"
+            src_path = f"{folder_path}/{id}.tif"
             with rasterio.Env(**env):
                 with self.reader(src_path, **reader_params.as_dict()) as src_dst:
                     return {"bounds": src_dst.geographic_bounds}
@@ -609,7 +615,7 @@ class TilerFactory(BaseTilerFactory):
             """Create map tile from a dataset."""
 
             tms = self.supported_tms.get(tileMatrixSetId)
-            src_path = f"optimized/{id}.tif"
+            src_path = f"{folder_path}/{id}.tif"
             with rasterio.Env(**env):
                 with self.reader(
                     src_path, tms=tms, **reader_params.as_dict()
@@ -884,7 +890,7 @@ class TilerFactory(BaseTilerFactory):
                 tiles_url += f"?{urlencode(qs)}"
 
             tms = self.supported_tms.get(tileMatrixSetId)
-            src_path = f"optimized/{id}.tif"
+            src_path = f"{folder_path}/{id}.tif"
             with rasterio.Env(**env):
                 with self.reader(
                     src_path, tms=tms, **reader_params.as_dict()
