@@ -31,7 +31,7 @@ jinja2_env = jinja2.Environment(
 DEFAULT_TEMPLATES = Jinja2Templates(env=jinja2_env)
 ENV = load_dotenv()
 folder_path = os.getenv("OPTIMIZED_PATH")
-# print(folder_path, "folder_path")
+print(folder_path, "folder_path")
 
 
 class WMSMediaType(str, Enum):
@@ -382,7 +382,7 @@ class wmsExtension(FactoryExtension):
                     layers_dict[layer] = {}
                     with rasterio.Env(**env):
                         with factory.reader(
-                            f"optimized/{layer}.tif", **reader_params.as_dict()
+                            f"{folder_path}/{layer}.tif", **reader_params.as_dict()
                         ) as src_dst:
                             layers_dict[layer]["srs"] = f"EPSG:{src_dst.crs.to_epsg()}"
                             layers_dict[layer]["bounds"] = src_dst.bounds
