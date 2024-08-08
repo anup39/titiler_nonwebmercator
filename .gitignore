@@ -1,5 +1,8 @@
 node_modules
 
+optimized
+
+
 # Lambda deployment package
 package.zip
 

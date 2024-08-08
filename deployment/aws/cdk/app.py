@@ -107,7 +107,8 @@ class titilerECSStack(Stack):
 
         # GUNICORN configuration
         if settings.workers_per_core:
-            task_env.update({"WORKERS_PER_CORE": str(settings.workers_per_core)})
+            task_env.update(
+                {"WORKERS_PER_CORE": str(settings.workers_per_core)})
         if settings.max_workers:
             task_env.update({"MAX_WORKERS": str(settings.max_workers)})
         if settings.web_concurrency:

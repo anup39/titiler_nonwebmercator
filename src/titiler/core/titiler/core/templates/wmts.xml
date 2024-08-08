@@ -38,7 +38,7 @@
     </ows:OperationsMetadata>
     <Contents>
         <Layer>
-            <ows:Title>{{ title }}</ows:Title>
+            <ows:Title>Orthophoto {{ layer_name }}</ows:Title>
             <ows:Identifier>{{ layer_name }}</ows:Identifier>
             <ows:Abstract>{{ title }}</ows:Abstract>
             <ows:WGS84BoundingBox crs="urn:ogc:def:crs:OGC:2:84">
